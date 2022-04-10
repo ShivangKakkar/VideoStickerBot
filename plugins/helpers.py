@@ -37,7 +37,7 @@ class Helpers(BotAPI):
     async def extract_emojis(text: str | Message) -> str:
         if isinstance(text, Message):
             text = text.text
-        emojis = ''.join(char for char in text if char in emoji.EMOJI_DATA.items())
+        emojis = ''.join(char for char in text if char in emoji.EMOJI_DATA)
         return emojis
 
     async def ask_for_emojis(self):
