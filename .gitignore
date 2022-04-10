@@ -1,0 +1,13 @@
+.idea/
+__pycache__/
+venv/
+.gitattributes
+
+.env
+samples/
+kangs/
+downloads/
+new.txt
+test.py
+.env.sample
+run.bat

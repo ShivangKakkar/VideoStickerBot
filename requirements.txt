@@ -1,0 +1,5 @@
+PyStark>=1.1.0
+git+https://github.com/encode/httpx.git
+emoji>=1.7.0
+pyromod==1.5
+requests>=2.27.1
