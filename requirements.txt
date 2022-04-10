@@ -1,4 +1,4 @@
-PyStark>=1.1.0
+PyStark>=1.1.1
 git+https://github.com/encode/httpx.git
 emoji>=1.7.0
 pyromod==1.5
