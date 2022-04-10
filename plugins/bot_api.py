@@ -1,7 +1,6 @@
 import httpx
 import typing
 import requests
-from bot import bot
 from pystark import Message
 from database import database
 from pystark.config import ENV
@@ -20,6 +19,7 @@ class BotAPI:
     NEW_PACK_NAME = "fpack{}_{}_by_" + username
     PACK_TITLE = 'Pack By @' + username
     NEW_PACK_TITLE = 'Pack {} By @' + username
+    LOG_CHAT = ENV().LOG_CHAT
 
     def __init__(self, message: Message, status: Message):
         self.session = httpx.AsyncClient()
@@ -28,7 +28,7 @@ class BotAPI:
         self.directory = 'downloads'
         self.input_file = f"{self.directory}/{self.user_id}_{message.message_id}"
         self.output_file = f"{self.input_file}_output.webm"
-        self.client = bot
+        self.client = message._client
         self.status = status
 
     async def params(self, pack_name, emojis, title):
@@ -66,10 +66,10 @@ class BotAPI:
             await self.error(resp, params['name'])
         except TooManyRequests as e:
             msg = self.message
-            client = self.client
             err = f"Error from Telegram \n\n{e.desc} \n\nFor queries visit @StarkBotsChat"
             await msg.reply(err, quote=True)
-            await client.log_tg(
+            await self.client.send_message(
+                self.LOG_CHAT,
                 f"'#TooManyRequests \n\n**Info** : {resp} \n\n**User** : {msg.from_user.mention} [`{msg.from_user.id}`] \n\n**Supposed Pack** : t.me/addstickers/{e.pack}"
             )
         except AlreadyOccupied:
@@ -87,9 +87,9 @@ class BotAPI:
             await database.set('users',  self.user_id, {'packs': total_packs})
         except UnknownException as e:
             msg = self.message
-            client = self.client
             await msg.reply(self.ERROR)
-            err = await client.log_tg(
+            err = await self.client.send_message(
+                self.LOG_CHAT,
                 f"'#ERROR \n\n**Info** : {resp} \n\n**User** : {msg.from_user.mention} [`{msg.from_user.id}`] \n\n**Supposed Pack** : t.me/addstickers/{e.pack}"
             )
             await err.reply_document(self.output_file)
@@ -125,5 +125,5 @@ class BotAPI:
         print(stderr)
         msg = self.message
         await msg.reply(self.ERROR)
-        await self.client.log_tg(f"#ERROR #FFMPEG \n\n{stderr} \n\n**User** : {msg.from_user.mention} [`{msg.from_user.id}`]")
+        await self.client.send_message(self.LOG_CHAT, f"#ERROR #FFMPEG \n\n{stderr} \n\n**User** : {msg.from_user.mention} [`{msg.from_user.id}`]")
         await msg.forward(settings().LOG_CHAT_ID, disable_notification=True)
