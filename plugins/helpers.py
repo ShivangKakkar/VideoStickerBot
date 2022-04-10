@@ -113,6 +113,8 @@ class Helpers(BotAPI):
     @staticmethod
     async def send_webm(message: Message):
         await message.reply_chat_action('upload_video')
-        file = await message.download()
+        file = f"downloads/{message.from_user.id}_{message.message_id}.webm"
+        await message.download(file)
         await message.reply_document(file, quote=True)
-        os.remove(file)
+        if os.path.exists(file):
+            os.remove(file)
