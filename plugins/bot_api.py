@@ -4,7 +4,7 @@ import requests
 from pystark import Message
 from database import database
 from pystark.config import ENV
-from plugins.exceptions import TooManyRequests, AlreadyOccupied, UnknownException, StickersTooMuch
+from plugins.exceptions import TooManyRequests, AlreadyOccupied, UnknownException, StickersTooMuch, StickerPackInvalid
 
 
 class BotAPI:
@@ -73,6 +73,8 @@ class BotAPI:
             )
         except AlreadyOccupied:
             await self.add_to_pack(params, file)
+        except StickerPackInvalid:
+            await self.new_pack(params, file)
         except StickersTooMuch:
             total_packs = await database.get('users', self.user_id, 'packs')
             if not total_packs:  # Just in Case
@@ -113,6 +115,9 @@ class BotAPI:
             elif 'STICKERS_TOO_MUCH' in desc:
                 # print('Raise StickersTooMuch')
                 raise StickersTooMuch(desc, pack_name)
+            elif 'STICKERSET_INVALID' in desc:
+                # print('Raise StickerPackInvalid')
+                raise StickerPackInvalid(desc, pack_name)
             elif 'name is already occupied' in desc:
                 # print('Raise AlreadyOccupied')
                 raise AlreadyOccupied(desc, pack_name)

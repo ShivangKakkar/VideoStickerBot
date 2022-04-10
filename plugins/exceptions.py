@@ -18,3 +18,8 @@ class UnknownException(CustomException):
 
 class StickersTooMuch(CustomException):
     pass
+
+
+class StickerPackInvalid(CustomException):
+    """Raised if sticker pack was deleted by end user"""
+    pass
