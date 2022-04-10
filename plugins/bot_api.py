@@ -4,7 +4,6 @@ import requests
 from pystark import Message
 from database import database
 from pystark.config import ENV
-from pystark.config import settings
 from plugins.exceptions import TooManyRequests, AlreadyOccupied, UnknownException, StickersTooMuch
 
 
@@ -94,7 +93,7 @@ class BotAPI:
             )
             await err.reply_document(self.output_file)
             await err.reply(f"PARAMS : {params} \n\nMETHOD : {method}")
-            await msg.forward(settings().LOG_CHAT_ID, disable_notification=True)
+            await msg.forward(self.LOG_CHAT, disable_notification=True)
             return False
         finally:
             if method == 'get':
@@ -126,4 +125,4 @@ class BotAPI:
         msg = self.message
         await msg.reply(self.ERROR)
         await self.client.send_message(self.LOG_CHAT, f"#ERROR #FFMPEG \n\n{stderr} \n\n**User** : {msg.from_user.mention} [`{msg.from_user.id}`]")
-        await msg.forward(settings().LOG_CHAT_ID, disable_notification=True)
+        await msg.forward(self.LOG_CHAT, disable_notification=True)
